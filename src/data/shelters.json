@@ -1,0 +1,74 @@
+[
+  {
+    "id": "1",
+    "name": "San Jose Convention Center",
+    "address": "150 W San Carlos St, San Jose, CA 95113",
+    "latitude": 37.3297,
+    "longitude": -121.8890,
+    "capacity": 500,
+    "type": "Emergency Shelter"
+  },
+  {
+    "id": "2",
+    "name": "Cupertino Community Center",
+    "address": "10350 Torre Ave, Cupertino, CA 95014",
+    "latitude": 37.3229,
+    "longitude": -122.0321,
+    "capacity": 200,
+    "type": "Community Shelter"
+  },
+  {
+    "id": "3",
+    "name": "Mountain View Community Center",
+    "address": "201 S Rengstorff Ave, Mountain View, CA 94041",
+    "latitude": 37.3894,
+    "longitude": -122.0819,
+    "capacity": 300,
+    "type": "Emergency Shelter"
+  },
+  {
+    "id": "4",
+    "name": "Palo Alto High School Gymnasium",
+    "address": "50 Embarcadero Rd, Palo Alto, CA 94301",
+    "latitude": 37.4419,
+    "longitude": -122.1430,
+    "capacity": 400,
+    "type": "School Shelter"
+  },
+  {
+    "id": "5",
+    "name": "Santa Clara Convention Center",
+    "address": "5001 Great America Pkwy, Santa Clara, CA 95054",
+    "latitude": 37.4040,
+    "longitude": -121.9735,
+    "capacity": 800,
+    "type": "Emergency Shelter"
+  },
+  {
+    "id": "6",
+    "name": "Sunnyvale Community Center",
+    "address": "550 E Remington Dr, Sunnyvale, CA 94087",
+    "latitude": 37.3688,
+    "longitude": -122.0363,
+    "capacity": 250,
+    "type": "Community Shelter"
+  },
+  {
+    "id": "7",
+    "name": "Fremont Central Park Gymnasium",
+    "address": "40000 Paseo Padre Pkwy, Fremont, CA 94538",
+    "latitude": 37.5485,
+    "longitude": -121.9886,
+    "capacity": 350,
+    "type": "Recreation Shelter"
+  },
+  {
+    "id": "8",
+    "name": "Milpitas Sports Center",
+    "address": "1325 E Calaveras Blvd, Milpitas, CA 95035",
+    "latitude": 37.4323,
+    "longitude": -121.8995,
+    "capacity": 300,
+    "type": "Sports Facility"
+  }
+]

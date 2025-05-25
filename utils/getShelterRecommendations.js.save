@@ -1,0 +1,80 @@
+// utils/getShelterRecommendations.js
+
+import Constants from 'expo-constants';
+
+const OPENAI_KEY = Constants.manifest.extra.openaiApiKey;
+const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
+
+/**
+ * Calls OpenAI to rank shelters for a given disaster.
+ * @param {'flood'|'earthquake'|...} disasterType
+ * @param {{latitude:number,longitude:number}} userLocation
+ * @param {Array} shelters             // your shelters from JSON
+ * @returns {Promise<Array>}          // [{ id, score, reason }]
+ */
+export async function getShelterRecommendations(disasterType, userLocation, shelters) {
+  // pick top 10 closest to limit payload
+  const list = shelters
+    .map(s => ({ id: s.id, name: s.name, lat: s.latitude, lng: s.longitude }))
+    .slice(0, 10);
+
+  const prompt = `
+You are an expert in disaster safety.
+A ${disasterType} is happening at (${userLocation.latitude},${userLocation.longitude}).
+Rank these shelters by suitability (1=best to ${list.length}=worst),
+and explain briefly why each ranking.
+Return JSON: [{ "id": "...", "score": 1, "reason": "..." }, …].
+Shelters: ${JSON.stringify(list)}.
+  `.trim();
+
+  const res = await fetch(OPENAI_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${OPENAI_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.2
+    })
+  });
+  const { choices } = await res.json();
+  // parse the AI response
+  const text = choices[0].message.content;
+  return JSON.parse(text);
+}
+import Constants from 'expo-constants';
+
+const OPENAI_KEY = Constants.manifest.extra.openaiApiKey;
+const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
+
+export async function getShelterRecommendations(disasterType, userLocation, shelters) {
+  const list = shelters
+    .map(s => ({ id: s.id, name: s.name, lat: s.latitude, lng: s.longitude }))
+    .slice(0, 10);
+
+  const prompt = \`
+You are an expert in disaster safety.
+A \${disasterType} is happening at (\${userLocation.latitude},\${userLocation.longitude}).
+Rank these shelters by suitability (1=best to \${list.length}=worst), and explain briefly why each.
+Return EXACTLY a JSON array: [{ "id": "...", "score": 1, "reason": "..." }, …].
+Shelters: \${JSON.stringify(list)}.
+  \`.trim();
+
+  const res = await fetch(OPENAI_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: \`Bearer \${OPENAI_KEY}\`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.2,
+    }),
+  });
+
+  const { choices } = await res.json();
+  return JSON.parse(choices[0].message.content);
+}

@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "SafeSpot",
+    "slug": "safespot",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0A0E1A"
+      }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "SafeSpot needs access to your location to provide real-time disaster alerts and find nearby emergency shelters."
+        }
+      ]
+    ]
+  }
+}

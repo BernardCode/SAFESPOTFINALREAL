@@ -1,0 +1,114 @@
+*** Begin Patch
+*** Update File: src/contexts/AlertsContext.js
+@@ const initialState = {
+-  autoRefreshEnabled: true,
++  autoRefreshEnabled: true,
++  selectedDisaster: null,
+@@ switch (action.type) {
+-  // ... other cases ...
++  case 'SET_DISASTER':
++    return { ...state, selectedDisaster: action.payload };
+*** End Patch
+
+*** Begin Patch
+*** Update File: src/contexts/AlertsContext.js
+@@ export function AlertsProvider({ children }) {
++  const setSelectedDisaster = (disaster) =>
++    dispatch({ type: 'SET_DISASTER', payload: disaster });
+@@ export function AlertsProvider({ children }) {
+-  const value = {
+-    ...state,
+-    refreshData,
+-    setUserLocation,
+-    setAutoRefresh,
+-    getNearbyHazards,
+-  };
++  const value = {
++    ...state,
++    refreshData,
++    setUserLocation,
++    setAutoRefresh,
++    getNearbyHazards,
++    setSelectedDisaster,
++    selectedDisaster: state.selectedDisaster,
++  };
+*** End Patch
+
+*** Begin Patch
+*** Update File: src/screens/HomeScreen.js
+@@
+-import React, { useState, useEffect } from 'react';
++import React, { useState, useEffect } from 'react';
++import { Picker } from '@react-native-picker/picker';
+@@ const { 
+-        refreshData
++        refreshData,
++        setSelectedDisaster,
++        selectedDisaster
+ } = useAlerts();
+@@
++      {/* Disaster selector */}
++      <View style={{ marginVertical: theme.spacing.md }}>
++        <Text style={{ color: theme.colors.textSecondary, marginBottom: 4 }}>
++          Select Disaster Type
++        </Text>
++        <View style={{ backgroundColor: theme.colors.surface, borderRadius: theme.borderRadius.sm }}>
++          <Picker selectedValue={selectedDisaster} onValueChange={setSelectedDisaster}>
++            <Picker.Item label="— none —" value={null} />
++            <Picker.Item label="Earthquake" value="earthquake" />
++            <Picker.Item label="Flood"      value="flood" />
++            <Picker.Item label="Wildfire"   value="wildfire" />
++            <Picker.Item label="Tornado"    value="tornado" />
++            <Picker.Item label="Storm"      value="storm" />
++          </Picker>
++        </View>
++      </View>
+*** End Patch
+
+*** Begin Patch
+*** Update File: src/screens/SheltersScreen.js
+@@
+-import React, { useState } from 'react';
++import React, { useState, useEffect } from 'react';
++import { getShelterRecommendations } from '../../utils/getShelterRecommendations';
+@@
+-  const { shelters, userLocation } = useAlerts();
++  const { shelters, userLocation, selectedDisaster } = useAlerts();
++  const [recommendations, setRecommendations] = useState([]);
++  const [scoring, setScoring] = useState(false);
++
++  useEffect(() => {
++    if (!selectedDisaster || !userLocation || shelters.length === 0) return;
++    setScoring(true);
++    getShelterRecommendations(selectedDisaster, userLocation, shelters)
++      .then(setRecommendations)
++      .catch(console.error)
++      .finally(() => setScoring(false));
++  }, [selectedDisaster, userLocation, shelters]);
+@@
++      {selectedDisaster && (
++        <View style={{ padding: theme.spacing.md }}>
++          <Text style={theme.typography.h3}>
++            Best Shelter for{' '}
++            {selectedDisaster.charAt(0).toUpperCase() + selectedDisaster.slice(1)}
++          </Text>
++          {scoring ? (
++            <Text>Scoring…</Text>
++          ) : recommendations.length ? (
++            (() => {
++              const top = recommendations[0];
++              const shelter = shelters.find(s => s.id === top.id);
++              return (
++                <Card style={{ marginTop: theme.spacing.sm }}>
++                  <Text style={theme.typography.bodyLarge}>{shelter.name}</Text>
++                  <Text style={theme.typography.caption}>{shelter.address}</Text>
++                  <Text style={theme.typography.caption}>Reason: {top.reason}</Text>
++                </Card>
++              );
++            })()
++          ) : (
++            <Text>No recommendations yet.</Text>
++          )}
++        </View>
++      )}
+*** End Patch
