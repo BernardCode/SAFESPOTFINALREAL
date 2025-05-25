@@ -1,18 +1,23 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { theme } from '../../theme';
+import React from "react";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { theme } from "../../theme";
 
-export default function Button({ 
-  title, 
-  onPress, 
-  variant = 'primary', 
-  size = 'medium',
+export default function Button({
+  title,
+  onPress,
+  variant = "primary",
+  size = "medium",
   loading = false,
   disabled = false,
   icon,
   style,
-  ...props 
+  ...props
 }) {
   const buttonStyles = [
     styles.base,
@@ -28,12 +33,16 @@ export default function Button({
     styles[`text${size.charAt(0).toUpperCase() + size.slice(1)}`],
   ];
 
-  const ButtonComponent = variant === 'primary' ? LinearGradient : TouchableOpacity;
-  const gradientProps = variant === 'primary' ? {
-    colors: theme.gradients.primary,
-    start: { x: 0, y: 0 },
-    end: { x: 1, y: 0 },
-  } : {};
+  const ButtonComponent =
+    variant === "primary" ? LinearGradient : TouchableOpacity;
+  const gradientProps =
+    variant === "primary"
+      ? {
+          colors: theme.gradients.primary,
+          start: { x: 0, y: 0 },
+          end: { x: 1, y: 0 },
+        }
+      : {};
 
   return (
     <ButtonComponent
@@ -44,7 +53,9 @@ export default function Button({
       {...props}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? '#FFFFFF' : theme.colors.primary} />
+        <ActivityIndicator
+          color={variant === "primary" ? "#FFFFFF" : theme.colors.primary}
+        />
       ) : (
         <>
           {icon}
@@ -57,13 +68,13 @@ export default function Button({
 
 const styles = StyleSheet.create({
   base: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: theme.borderRadius.md,
     ...theme.shadows.small,
   },
-  
+
   // Variants
   primary: {
     // Gradient applied via LinearGradient
@@ -74,14 +85,14 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.primary,
   },
   outline: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     borderWidth: 1,
     borderColor: theme.colors.border,
   },
   ghost: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
-  
+
   // Sizes
   small: {
     paddingHorizontal: theme.spacing.md,
@@ -98,14 +109,14 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.lg,
     minHeight: 56,
   },
-  
+
   // Text styles
   text: {
-    textAlign: 'center',
-    fontWeight: '600',
+    textAlign: "center",
+    fontWeight: "600",
   },
   textPrimary: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
   textSecondary: {
     color: theme.colors.primary,
@@ -116,7 +127,7 @@ const styles = StyleSheet.create({
   textGhost: {
     color: theme.colors.primary,
   },
-  
+
   textSmall: {
     ...theme.typography.labelMedium,
   },
@@ -126,7 +137,7 @@ const styles = StyleSheet.create({
   textLarge: {
     ...theme.typography.bodyLarge,
   },
-  
+
   disabled: {
     opacity: 0.5,
   },

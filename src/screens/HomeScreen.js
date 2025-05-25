@@ -185,8 +185,8 @@ export default function HomeScreen({ navigation }) {
           <RefreshControl
             refreshing={loading}
             onRefresh={handleRefresh}
-            tintColor={theme.colors.primary}
-            colors={[theme.colors.primary]}
+            tintColor={theme.colors.textPrimary}
+            colors={[theme.colors.textPrimary]}
           />
         }
         showsVerticalScrollIndicator={false}
@@ -200,7 +200,6 @@ export default function HomeScreen({ navigation }) {
             },
           ]}
         >
-          {/* App Title */}
           <View style={styles.titleContainer}>
             <Text style={styles.title}>SafeSpot</Text>
             <Text style={styles.subtitle}>
@@ -208,7 +207,6 @@ export default function HomeScreen({ navigation }) {
             </Text>
           </View>
 
-          {/* Status Badge */}
           <View style={styles.statusContainer}>
             <StatusBadge
               status={statusInfo.status}
@@ -218,7 +216,6 @@ export default function HomeScreen({ navigation }) {
           </View>
         </Animated.View>
 
-        {/* Disaster Selector */}
         <Card style={styles.disasterSelector}>
           <Text style={styles.disasterSelectorTitle}>
             Select Current Disaster
@@ -249,134 +246,53 @@ export default function HomeScreen({ navigation }) {
           </View>
         </Card>
 
-        {/* Location Status */}
-        {locationPermission === false && (
-          <Card variant="warning" style={styles.alertCard}>
-            <Text style={styles.alertTitle}>📍 Location Access Required</Text>
-            <Text style={styles.alertText}>
-              Enable location permissions for personalized disaster alerts and
-              nearby shelter recommendations.
-            </Text>
-            <Button
-              title="Enable Location"
-              variant="outline"
-              size="small"
-              onPress={() => requestLocationPermission()}
-              style={styles.alertButton}
-            />
+        {hasNearbyHazards && (
+          <Card style={styles.alertsCard}>
+            <Text style={styles.alertsTitle}>Active Alerts</Text>
+            <View style={styles.alertsList}>
+              {nearbyHazards
+                .map((hazard) => {
+                  // Skip rendering if hazard is invalid
+                  if (!hazard || !hazard.id) return null;
+
+                  const disasterType = DISASTER_TYPES.find(
+                    (d) => d.id === hazard.type
+                  );
+                  const icon = disasterType?.icon || "⚠️";
+                  const title = hazard.title || "Unknown Alert";
+                  const description =
+                    hazard.description || "No additional details available";
+
+                  return (
+                    <View key={hazard.id} style={styles.alertItem}>
+                      <Text style={styles.alertIcon}>{icon}</Text>
+                      <View style={styles.alertContent}>
+                        <Text style={styles.alertTitle}>{title}</Text>
+                        <Text style={styles.alertDescription}>
+                          {description}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                })
+                .filter(Boolean)}{" "}
+              {/* Remove any null entries */}
+            </View>
           </Card>
         )}
 
-        {/* Critical Hazard Alert */}
-        {criticalHazards.length > 0 && (
-          <Card variant="danger" style={styles.criticalAlert}>
-            <Text style={styles.criticalAlertTitle}>⚠️ CRITICAL ALERT</Text>
-            <Text style={styles.criticalAlertText}>
-              {criticalHazards[0].event} detected in your area
-            </Text>
-            <Button
-              title="View on Map"
-              variant="outline"
-              size="small"
-              onPress={() => navigation.navigate("Map")}
-              style={styles.criticalAlertButton}
-            />
-          </Card>
-        )}
-
-        {/* Main Action Cards */}
-        <View style={styles.actionGrid}>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate("Map")}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={["#DC2626", "#EF4444"]}
-              style={styles.actionCardGradient}
-            >
-              <Text style={styles.actionCardIcon}>🗺️</Text>
-              <Text style={styles.actionCardTitle}>Current Hazards</Text>
-              <Text style={styles.actionCardSubtitle}>
-                {nearbyHazards.length} active alerts nearby
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate("Shelters")}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={["#2563EB", "#3B82F6"]}
-              style={styles.actionCardGradient}
-            >
-              <Text style={styles.actionCardIcon}>🏠</Text>
-              <Text style={styles.actionCardTitle}>Find Shelter</Text>
-              <Text style={styles.actionCardSubtitle}>
-                Emergency shelters near you
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <Button
+            title="Emergency Checklist"
+            onPress={() => setShowChecklist(true)}
+            style={styles.checklistButton}
+            textStyle={styles.checklistButtonText}
+          />
         </View>
 
-        {/* Quick Actions */}
-        <Card style={styles.quickActionsCard}>
-          <Text style={styles.quickActionsTitle}>Quick Actions</Text>
-
-          <TouchableOpacity
-            style={styles.quickActionItem}
-            onPress={() => setShowChecklist(true)}
-          >
-            <View style={styles.quickActionIcon}>
-              <Text style={styles.quickActionIconText}>📋</Text>
-            </View>
-            <View style={styles.quickActionContent}>
-              <Text style={styles.quickActionTitle}>Emergency Checklists</Text>
-              <Text style={styles.quickActionSubtitle}>
-                Safety guidelines for disasters
-              </Text>
-            </View>
-            <Text style={styles.quickActionArrow}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.quickActionItem}
-            onPress={handleRefresh}
-            disabled={loading}
-          >
-            <View style={styles.quickActionIcon}>
-              <Text style={styles.quickActionIconText}>🔄</Text>
-            </View>
-            <View style={styles.quickActionContent}>
-              <Text style={styles.quickActionTitle}>Refresh Data</Text>
-              <Text style={styles.quickActionSubtitle}>
-                {formatLastUpdated()}
-              </Text>
-            </View>
-            <Text style={styles.quickActionArrow}>›</Text>
-          </TouchableOpacity>
-        </Card>
-
-        {/* Error State */}
-        {error && (
-          <Card variant="danger" style={styles.errorCard}>
-            <Text style={styles.errorTitle}>⚠️ Connection Error</Text>
-            <Text style={styles.errorText}>{error}</Text>
-            <Button
-              title="Retry"
-              variant="outline"
-              size="small"
-              onPress={handleRefresh}
-              loading={loading}
-              style={styles.errorButton}
-            />
-          </Card>
-        )}
+        <Text style={styles.lastUpdated}>{formatLastUpdated()}</Text>
       </ScrollView>
 
-      {/* Checklist Modal */}
       <ChecklistModal
         visible={showChecklist}
         onClose={() => setShowChecklist(false)}
@@ -394,194 +310,129 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: theme.spacing.lg,
-    paddingBottom: theme.spacing.xxxl,
+    paddingTop: theme.spacing.xl,
   },
   header: {
     marginBottom: theme.spacing.xl,
   },
   titleContainer: {
-    alignItems: "center",
-    marginBottom: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
   },
   title: {
     ...theme.typography.displayLarge,
     color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.sm,
+    marginBottom: theme.spacing.xs,
   },
   subtitle: {
     ...theme.typography.bodyLarge,
     color: theme.colors.textSecondary,
-    textAlign: "center",
-    maxWidth: width * 0.8,
+    opacity: 0.9,
   },
   statusContainer: {
-    alignItems: "center",
-  },
-  alertCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  alertTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.sm,
-  },
-  alertText: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.textSecondary,
-    marginBottom: theme.spacing.md,
-  },
-  alertButton: {
-    alignSelf: "flex-start",
-  },
-  criticalAlert: {
-    marginBottom: theme.spacing.lg,
-    borderWidth: 2,
-    borderColor: theme.colors.error,
-  },
-  criticalAlertTitle: {
-    ...theme.typography.h2,
-    color: "#FFFFFF",
-    marginBottom: theme.spacing.sm,
-    fontWeight: "700",
-  },
-  criticalAlertText: {
-    ...theme.typography.bodyLarge,
-    color: "#FFFFFF",
-    marginBottom: theme.spacing.md,
-  },
-  criticalAlertButton: {
-    alignSelf: "flex-start",
-  },
-  actionGrid: {
-    flexDirection: "row",
-    gap: theme.spacing.md,
-    marginBottom: theme.spacing.xl,
-  },
-  actionCard: {
-    flex: 1,
-    borderRadius: theme.borderRadius.lg,
-    overflow: "hidden",
-    ...theme.shadows.medium,
-  },
-  actionCardGradient: {
-    padding: theme.spacing.lg,
-    alignItems: "center",
-    minHeight: 140,
-    justifyContent: "center",
-  },
-  actionCardIcon: {
-    fontSize: 32,
-    marginBottom: theme.spacing.md,
-  },
-  actionCardTitle: {
-    ...theme.typography.h3,
-    color: "#FFFFFF",
-    textAlign: "center",
-    marginBottom: theme.spacing.sm,
-  },
-  actionCardSubtitle: {
-    ...theme.typography.bodySmall,
-    color: "rgba(255, 255, 255, 0.8)",
-    textAlign: "center",
-  },
-  quickActionsCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  quickActionsTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.lg,
-  },
-  quickActionItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  quickActionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: theme.borderRadius.md,
-    backgroundColor: theme.colors.backgroundSecondary,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: theme.spacing.md,
-  },
-  quickActionIconText: {
-    fontSize: 18,
-  },
-  quickActionContent: {
-    flex: 1,
-  },
-  quickActionTitle: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.xs,
-  },
-  quickActionSubtitle: {
-    ...theme.typography.bodySmall,
-    color: theme.colors.textSecondary,
-  },
-  quickActionArrow: {
-    ...theme.typography.h2,
-    color: theme.colors.textTertiary,
-  },
-  errorCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  errorTitle: {
-    ...theme.typography.h3,
-    color: "#FFFFFF",
-    marginBottom: theme.spacing.sm,
-  },
-  errorText: {
-    ...theme.typography.bodyMedium,
-    color: "rgba(255, 255, 255, 0.8)",
-    marginBottom: theme.spacing.md,
-  },
-  errorButton: {
-    alignSelf: "flex-start",
+    marginTop: theme.spacing.md,
   },
   disasterSelector: {
-    marginHorizontal: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    padding: theme.spacing.md,
+    marginBottom: theme.spacing.xl,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.lg,
+    ...theme.shadows.medium,
   },
   disasterSelectorTitle: {
-    ...theme.typography.h3,
-    color: theme.colors.text,
-    marginBottom: theme.spacing.sm,
+    ...theme.typography.h2,
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.md,
   },
   disasterGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
+    marginHorizontal: -theme.spacing.xs,
   },
   disasterButton: {
-    width: (width - theme.spacing.md * 4) / 2,
-    backgroundColor: theme.colors.surface,
+    width: (width - theme.spacing.lg * 2 - theme.spacing.md) / 3,
+    aspectRatio: 1,
+    margin: theme.spacing.xs,
+    backgroundColor: theme.colors.surfaceElevated,
     borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.sm,
-    marginBottom: theme.spacing.sm,
+    justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+    padding: theme.spacing.sm,
+    ...theme.shadows.small,
   },
   disasterButtonSelected: {
     backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
+    transform: [{ scale: 1.05 }],
   },
   disasterIcon: {
-    fontSize: 24,
+    fontSize: 32,
     marginBottom: theme.spacing.xs,
   },
   disasterLabel: {
-    ...theme.typography.body2,
-    color: theme.colors.text,
+    ...theme.typography.labelMedium,
+    color: theme.colors.textSecondary,
     textAlign: "center",
   },
   disasterLabelSelected: {
-    color: theme.colors.surface,
+    color: theme.colors.textPrimary,
+    fontWeight: "600",
+  },
+  alertsCard: {
+    marginBottom: theme.spacing.xl,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.lg,
+    ...theme.shadows.medium,
+  },
+  alertsTitle: {
+    ...theme.typography.h2,
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.md,
+  },
+  alertsList: {
+    gap: theme.spacing.md,
+  },
+  alertItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: theme.colors.surfaceElevated,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    ...theme.shadows.small,
+  },
+  alertIcon: {
+    fontSize: 24,
+    marginRight: theme.spacing.md,
+  },
+  alertContent: {
+    flex: 1,
+  },
+  alertTitle: {
+    ...theme.typography.labelLarge,
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.xs,
+  },
+  alertDescription: {
+    ...theme.typography.bodyMedium,
+    color: theme.colors.textSecondary,
+  },
+  buttonContainer: {
+    marginBottom: theme.spacing.xl,
+  },
+  checklistButton: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.md,
+    ...theme.shadows.medium,
+  },
+  checklistButtonText: {
+    ...theme.typography.labelLarge,
+    color: theme.colors.textPrimary,
+    textAlign: "center",
+  },
+  lastUpdated: {
+    ...theme.typography.bodySmall,
+    color: theme.colors.textTertiary,
+    textAlign: "center",
+    marginBottom: theme.spacing.xl,
   },
 });

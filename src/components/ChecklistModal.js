@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Modal,
   View,
@@ -6,9 +6,9 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-} from 'react-native';
-import { theme } from '../theme';
-import { checklists } from '../data/checklists';
+} from "react-native";
+import { theme } from "../theme";
+import { checklists } from "../data/checklists";
 
 export default function ChecklistModal({ visible, onClose }) {
   const [expandedSection, setExpandedSection] = useState(null);
@@ -27,10 +27,10 @@ export default function ChecklistModal({ visible, onClose }) {
           {type.charAt(0).toUpperCase() + type.slice(1)} Safety
         </Text>
         <Text style={styles.expandIcon}>
-          {expandedSection === type ? '−' : '+'}
+          {expandedSection === type ? "−" : "+"}
         </Text>
       </TouchableOpacity>
-      
+
       {expandedSection === type && (
         <View style={styles.sectionContent}>
           {items.map((item, index) => (
@@ -58,7 +58,7 @@ export default function ChecklistModal({ visible, onClose }) {
             <Text style={styles.closeText}>Done</Text>
           </TouchableOpacity>
         </View>
-        
+
         <ScrollView style={styles.content}>
           {Object.entries(checklists).map(([type, items]) =>
             renderChecklist(type, items)
@@ -75,9 +75,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: theme.spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.surface,
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   closeText: {
     ...theme.typography.body,
     color: theme.colors.primary,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   content: {
     flex: 1,
@@ -102,12 +102,12 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.md,
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.md,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: theme.spacing.md,
     backgroundColor: theme.colors.surface,
   },
@@ -118,16 +118,16 @@ const styles = StyleSheet.create({
   expandIcon: {
     ...theme.typography.h3,
     color: theme.colors.primary,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   sectionContent: {
     padding: theme.spacing.md,
     paddingTop: 0,
   },
   checklistItem: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: theme.spacing.sm,
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   bullet: {
     ...theme.typography.body,
